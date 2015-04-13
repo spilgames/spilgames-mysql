@@ -1,0 +1,10 @@
+name 'spil_mysql'
+version '0.1'
+source 'https://github/spilgames/spilgames-mysql'
+author 'Spilgames'
+license 'GPL V2.0'
+summary 'Spil mysql module'
+description 'Spil mysql module'
+project_page 'https://github/spilgames/spilgames-mysql'
+dependency 'puppetlabs/mysql', '>= 2.2.3'
+

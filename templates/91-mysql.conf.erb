@@ -1,0 +1,5 @@
+# Increase the limit of processes for MySQL as it is 
+# overridden by default to prevent accidental fork bombs.
+
+mysql   soft  nproc   <%= @mysql_proc_limit %>
+mysql   hard  nproc   <%= @mysql_proc_limit %>

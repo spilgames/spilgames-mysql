@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# define restricted path
+PATH="/bin:/usr/bin:/sbin:/usr/sbin"
+
+# adirname - return absolute dirname of given file
+adirname() { odir=`pwd`; cd `dirname $1`; pwd; cd "${odir}"; }
+
+
+# ---------
+# constants
+# ---------
+MYNAM=`basename "$0"`
+MYDIR=`adirname "$0"`
+MYTMP="/tmp"
+MYLCK="${MYTMP}/${MYNAM}.lock"
+MYPRG="mysql -u root -Bse"      # mysql client
+MYMXL=5                         # max number of binary logs to keep
+
+# ---------
+# functions
+# ---------
+
+message() { echo "$@"; }	# message - output message on stdout
+error() { echo "$@" >&2; }	# error - output message on stderr
+die() { error "$@"; exit 1; }	# die - output message on stderr and exit
+
+
+# ----
+# main
+# ----
+
+# perform some locking (as good as it gets in a shell)
+[ -s "${MYLCK}" ] && kill -0 `cat "${MYLCK}"` 2>/dev/null &&
+        die "${MYNAM}: already running!"
+echo "$$" > "${MYLCK}"
+
+# purge binary logs
+if grep -q '^log-bin' <%= @mysql_config_file %>; then
+	mylgs=`${MYPRG} "SHOW MASTER LOGS"`
+	if [ `echo "${mylgs}" | wc -l` -gt ${MYMXL} ]; then
+		mylog=`echo "${mylgs}" | tail "-${MYMXL}" | head -1 | awk '{ print $1; }'`
+		[ "$1" == "-q" ] || echo "Purging binary logs up to ${mylog}..."
+		${MYPRG} "PURGE MASTER LOGS TO '${mylog}'"
+	fi
+fi

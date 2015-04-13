@@ -1,0 +1,5 @@
+# purge mysql binary logs
+00 * * * *	root	/opt/admin/scripts/mysql_purge -q
+		
+# flush mysql connection errors
+*/15 * * * *	root	/usr/bin/mysqladmin -u root flush-hosts

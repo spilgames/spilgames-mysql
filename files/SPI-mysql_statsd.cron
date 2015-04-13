@@ -1,0 +1,3 @@
+MAILTO=mysql@spilgames.com
+# Restart logging through statsd on a daily basis
+55 3 * * *   root   /sbin/service mysql_statsd restart > /dev/null
